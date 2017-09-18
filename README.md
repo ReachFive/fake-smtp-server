@@ -1,5 +1,5 @@
 
-# Fake HTTP Server
+# Fake STMP Server
 
 Fake SMTP Server is a fake SMTP server for development teams to test emails sent from the development and staging 
 environments without spamming real customers.
