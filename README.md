@@ -42,16 +42,29 @@ Received mails are listed on `http://localhost:1080/emails by default, and looks
 ]
 ```
 
-You can also filter emails by recipient: 
+You can filter emails with the following parameters:
+
+ * `from`: filter sender
+ * `to`: filter recipient
+ * `since`: filter email date
+ * `until`: filter email date
+ 
+Example:
+
+```
+    GET http://localhost:1080/emails?from=joe@example.com&to=bob@example.com&since=2017-09-18T12:00:00Z&until=2017-09-19T00:00:00Z
+```
+
+You can also filter emails by recipient directly in the path: 
 
 ```
     GET http://localhost:1080/emails/:address
 ```
 
-Or get the last sent email:
+Example:
 
 ```
-    GET http://localhost:1080/emails/:address/last
+    GET http://localhost:1080/emails/bob@example.com?since=2017-09-18T12:00:00Z
 ```
 
 

@@ -3,6 +3,7 @@ const SMTPServer = require('smtp-server').SMTPServer;
 const simpleParser = require('mailparser').simpleParser;
 const express = require("express");
 const _ = require("lodash");
+const moment = require("moment");
 const cli = require('cli').enable('catchall');
 
 
@@ -53,24 +54,42 @@ server.listen(config.smtpPort);
 
 const app = express();
 
+function emailFilter(filter) {
+  return email => {
+    if (filter.since || filter.until) {
+      const date = moment(email.date);
+      if (filter.since && date.isBefore(filter.since)) {
+        return false;
+      }
+      if (filter.until && date.isAfter(filter.until)) {
+        return false;
+      }
+    }
+
+    if (filter.to && _.every(email.to.value, to => to.address !== filter.to)) {
+      return false;
+    }
+
+    if (filter.from && _.every(email.from.value, from => from.address !== filter.from)) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+function getEmails(filter) {
+  return mails.filter(emailFilter(filter))
+}
+
 app.get('/emails', (req, res) => {
-  res.json(mails);
+  res.json(getEmails(req.query));
 });
 
 app.get('/emails/:address', (req, res) => {
-  res.json(mails.filter(mail => _.some(mail.to.value, to => to.address === req.params.address)));
-});
-
-app.get('/emails/:address/last', (req, res) => {
-  const address = req.params.address;
-  const lastEmail = mails.find(mail => _.some(mail.to.value, to => to.address === address));
-  if (lastEmail) {
-    res.json(lastEmail);
-  } else {
-    res.status(404).json({
-      message: `No email found for address '${address}'`
-    });
-  }
+  const filter = _.clone(req.query);
+  filter.to = req.params.address;
+  res.json(getEmails(filter));
 });
 
 app.listen(config.httpPort, () => {
