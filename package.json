@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "ReachFive",
   "license": "MIT",
+  "bin": {
+    "fake-smtp-server": "./index.js"
+  },
   "dependencies": {
     "cli": "^1.0.1",
     "express": "^4.15.4",
