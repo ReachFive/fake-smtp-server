@@ -6,7 +6,7 @@ environments without spamming real customers.
 
 ## API
 
-Received mails are listed on `http://localhost:1080/api/emails` by default, and looks like this:
+Received mails are listed on `http://localhost:1080/api/emails by default, and looks like this:
 
 ```json
 [
@@ -68,26 +68,26 @@ Go to:
 
     GET http://localhost:1080/emails
 
-Or 
+Or
 
     GET http://localhost:1080/emails/:address
 
-##Install
+## Install
 
 ```bash
   npm install -g fake-smtp-server
 ```
 
-##Usage
+## Usage
 
     Usage:
-      smtp-sink [OPTIONS] [ARGS]
+      fake-smtp-server [OPTIONS] [ARGS]
     
     Options: 
-      -s, --smtpPort [NUMBER]SMTP port to listen on (Default is 1025)
-      -h, --httpPort [NUMBER]HTTP port to listen on (Default is 1080)
-      -w, --whitelist STRING Only accept e-mails from these adresses. Accepts 
-                             multiple e-mails comma-separated 
+      -s, --smtp-port [NUMBER] SMTP port to listen on (Default is 1025)
+      -h, --http-port [NUMBER] HTTP port to listen on (Default is 1080)
+      -w, --whitelist STRING Only accept e-mails from these adresses. 
+                             Accepts multiple e-mails comma-separated.
       -m, --max [NUMBER]     Max number of e-mails to keep (Default is 10)
 
 ## LICENSE

@@ -10,8 +10,8 @@ const cli = require('cli').enable('catchall');
 
 
 const config = cli.parse({
-  smtpPort: ['s', 'SMTP port to listen on', 'number', 1025],
-  httpPort: ['h', 'HTTP port to listen on', 'number', 1080],
+  'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
+  'http-port': ['h', 'HTTP port to listen on', 'number', 1080],
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100]
 });
@@ -52,7 +52,7 @@ server.on('error', err => {
   cli.error(err);
 });
 
-server.listen(config.smtpPort);
+server.listen(config['smtp-port']);
 
 const app = express();
 
@@ -121,8 +121,8 @@ app.get('/api/emails/:address', (req, res) => {
   res.json(getEmailsTo(req.params.address, req.query));
 });
 
-app.listen(config.httpPort, () => {
-  cli.info("HTTP server listening on port " + config.httpPort + ", e-mails are available on /emails.");
+app.listen(config['http-port'], () => {
+  cli.info("HTTP server listening on port " + config['http-port'] + ", e-mails are available on /emails.");
 });
 
-cli.info("SMTP server listening on port " + config.smtpPort);
+cli.info("SMTP server listening on port " + config['smtp-port']);
