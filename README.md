@@ -6,7 +6,7 @@ environments without spamming real customers.
 
 ## API
 
-Received mails are listed on `http://localhost:1080/api/emails by default, and looks like this:
+Received mails are listed on `http://localhost:1080/api/emails` by default, and looks like this:
 
 ```json
 [
@@ -39,8 +39,7 @@ Received mails are listed on `http://localhost:1080/api/emails by default, and l
     },
     "messageId": "<1433879119.43.1505751136615@[10.143.108.87]>",
     "html": false
-  },
-  ...
+  }
 ]
 ```
 
@@ -53,55 +52,43 @@ You can filter emails with the following parameters:
  
 Example:
 
-```
     GET http://localhost:1080/api/emails?from=joe@example.com&to=bob@example.com&since=2017-09-18T12:00:00Z&until=2017-09-19T00:00:00Z
-```
 
 You can also filter emails by recipient directly in the path: 
 
-```
     GET http://localhost:1080/api/emails/:address
-```
 
 Example:
 
-```
     GET http://localhost:1080/api/emails/bob@example.com?since=2017-09-18T12:00:00Z
-```
 
 ## Web interface
 
 Go to:
 
-```
     GET http://localhost:1080/emails
-```
 
 Or 
 
-```
     GET http://localhost:1080/emails/:address
-```
 
 ##Install
 
 ```bash
-  git clone https://github.com/ReachFive/fake-smtp-server
+  npm install -g fake-smtp-server
 ```
 
 ##Usage
 
-```
-Usage:
-  smtp-sink [OPTIONS] [ARGS]
-
-Options: 
-  -s, --smtpPort [NUMBER]SMTP port to listen on (Default is 1025)
-  -h, --httpPort [NUMBER]HTTP port to listen on (Default is 1080)
-  -w, --whitelist STRING Only accept e-mails from these adresses. Accepts 
-                         multiple e-mails comma-separated 
-  -m, --max [NUMBER]     Max number of e-mails to keep (Default is 10)
-```
+    Usage:
+      smtp-sink [OPTIONS] [ARGS]
+    
+    Options: 
+      -s, --smtpPort [NUMBER]SMTP port to listen on (Default is 1025)
+      -h, --httpPort [NUMBER]HTTP port to listen on (Default is 1080)
+      -w, --whitelist STRING Only accept e-mails from these adresses. Accepts 
+                             multiple e-mails comma-separated 
+      -m, --max [NUMBER]     Max number of e-mails to keep (Default is 10)
 
 ## LICENSE
 
