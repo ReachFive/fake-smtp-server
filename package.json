@@ -11,6 +11,7 @@
   "dependencies": {
     "cli": "^1.0.1",
     "express": "^4.15.4",
+    "express-handlebars": "^3.0.0",
     "lodash": "^4.17.4",
     "mailparser": "^2.0.5",
     "moment": "^2.18.1",

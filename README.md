@@ -4,7 +4,9 @@
 Fake SMTP Server is a fake SMTP server for development teams to test emails sent from the development and staging 
 environments without spamming real customers.
 
-Received mails are listed on `http://localhost:1080/emails by default, and looks like this:
+## API
+
+Received mails are listed on `http://localhost:1080/api/emails by default, and looks like this:
 
 ```json
 [
@@ -52,21 +54,34 @@ You can filter emails with the following parameters:
 Example:
 
 ```
-    GET http://localhost:1080/emails?from=joe@example.com&to=bob@example.com&since=2017-09-18T12:00:00Z&until=2017-09-19T00:00:00Z
+    GET http://localhost:1080/api/emails?from=joe@example.com&to=bob@example.com&since=2017-09-18T12:00:00Z&until=2017-09-19T00:00:00Z
 ```
 
 You can also filter emails by recipient directly in the path: 
 
 ```
-    GET http://localhost:1080/emails/:address
+    GET http://localhost:1080/api/emails/:address
 ```
 
 Example:
 
 ```
-    GET http://localhost:1080/emails/bob@example.com?since=2017-09-18T12:00:00Z
+    GET http://localhost:1080/api/emails/bob@example.com?since=2017-09-18T12:00:00Z
 ```
 
+## Web interface
+
+Go to:
+
+```
+    GET http://localhost:1080/emails
+```
+
+Or 
+
+```
+    GET http://localhost:1080/emails/:address
+```
 
 ##Install
 

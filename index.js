@@ -2,6 +2,7 @@
 const SMTPServer = require('smtp-server').SMTPServer;
 const simpleParser = require('mailparser').simpleParser;
 const express = require("express");
+const handlebars = require('express-handlebars');
 const _ = require("lodash");
 const moment = require("moment");
 const cli = require('cli').enable('catchall');
@@ -82,14 +83,35 @@ function getEmails(filter) {
   return mails.filter(emailFilter(filter))
 }
 
+function getEmailsTo(address, filter) {
+  const fullFilter = _.clone(filter);
+  fullFilter.to = address;
+  return getEmails(fullFilter);
+}
+
+app.set('views', './views');
+
+app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
+app.set('view engine', 'handlebars');
+
+function renderHtml(res, emails) {
+  res.render('emails', { emails });
+}
+
 app.get('/emails', (req, res) => {
-  res.json(getEmails(req.query));
+  renderHtml(res, getEmails(req.query));
 });
 
 app.get('/emails/:address', (req, res) => {
-  const filter = _.clone(req.query);
-  filter.to = req.params.address;
-  res.json(getEmails(filter));
+  renderHtml(res, getEmailsTo(req.params.address, req.query));
+});
+
+app.get('/api/emails', (req, res) => {
+  res.json(getEmails(req.query));
+});
+
+app.get('/api/emails/:address', (req, res) => {
+  res.json(getEmailsTo(req.params.address, req.query));
 });
 
 app.listen(config.httpPort, () => {
