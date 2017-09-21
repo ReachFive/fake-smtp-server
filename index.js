@@ -90,9 +90,15 @@ function getEmailsTo(address, filter) {
   return getEmails(fullFilter);
 }
 
-app.set('views', path.join(__dirname, 'views'));
+const viewsDir = path.join(__dirname, 'views');
 
-app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
+app.set('views', viewsDir);
+
+app.engine('handlebars', handlebars({
+  defaultLayout: 'main',
+  layoutsDir: path.join(viewsDir, 'layouts')
+}));
+
 app.set('view engine', 'handlebars');
 
 function renderHtml(res, emails) {
