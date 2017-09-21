@@ -98,11 +98,11 @@ function renderHtml(res, emails) {
   res.render('emails', { emails });
 }
 
-app.get('/emails', (req, res) => {
+app.get('/', (req, res) => {
   renderHtml(res, getEmails(req.query));
 });
 
-app.get('/emails/:address', (req, res) => {
+app.get('/:address', (req, res) => {
   renderHtml(res, getEmailsTo(req.params.address, req.query));
 });
 
