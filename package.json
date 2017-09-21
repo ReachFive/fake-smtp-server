@@ -1,6 +1,6 @@
 {
   "name": "fake-smtp-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Fake SMTP Server for email testing",
   "main": "index.js",
   "author": "ReachFive",
