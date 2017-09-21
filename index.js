@@ -2,6 +2,7 @@
 const SMTPServer = require('smtp-server').SMTPServer;
 const simpleParser = require('mailparser').simpleParser;
 const express = require("express");
+const path = require("path");
 const handlebars = require('express-handlebars');
 const _ = require("lodash");
 const moment = require("moment");
@@ -89,7 +90,7 @@ function getEmailsTo(address, filter) {
   return getEmails(fullFilter);
 }
 
-app.set('views', './views');
+app.set('views', path.join(__dirname, 'views'));
 
 app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
