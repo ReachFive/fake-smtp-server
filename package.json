@@ -2,6 +2,7 @@
   "name": "fake-smtp-server",
   "version": "0.4.0",
   "description": "Fake SMTP Server for email testing",
+  "url": "https://github.com/ReachFive/fake-smtp-server",
   "main": "index.js",
   "author": "ReachFive",
   "license": "MIT",
