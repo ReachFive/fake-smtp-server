@@ -46,7 +46,11 @@
                     </li>
                 </ul>
                 <div class="card-body">
-                    {{{this.textAsHtml}}}
+                    {{#if this.html}}
+                        {{{this.html}}}
+                    {{else}}
+                        {{{this.textAsHtml}}}
+                    {{/if}}
                 </div>
             </div>
         </div>
