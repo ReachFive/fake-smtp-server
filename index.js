@@ -2,8 +2,6 @@
 const SMTPServer = require('smtp-server').SMTPServer;
 const simpleParser = require('mailparser').simpleParser;
 const express = require("express");
-const path = require("path");
-const handlebars = require('express-handlebars');
 const _ = require("lodash");
 const moment = require("moment");
 const cli = require('cli').enable('catchall');
@@ -90,28 +88,13 @@ function getEmailsTo(address, filter) {
   return getEmails(fullFilter);
 }
 
-const viewsDir = path.join(__dirname, 'views');
-
-app.set('views', viewsDir);
-
-app.engine('handlebars', handlebars({
-  defaultLayout: 'main',
-  layoutsDir: path.join(viewsDir, 'layouts')
-}));
-
-app.set('view engine', 'handlebars');
-
-function renderHtml(res, emails) {
-  res.render('emails', { emails });
-}
-
-app.get('/', (req, res) => {
-  renderHtml(res, getEmails(req.query));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
 
-app.get('/:address', (req, res) => {
-  renderHtml(res, getEmailsTo(req.params.address, req.query));
-});
+app.use(express.static('build'));
 
 app.get('/api/emails', (req, res) => {
   res.json(getEmails(req.query));
