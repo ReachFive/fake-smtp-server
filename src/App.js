@@ -58,7 +58,13 @@ const Email = ({ email, isOpen, onToggle }) => {
   )
 };
 
-const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:1080' : `${window.location.protocol}//${window.location.host}` ;
+function removeTrailingSlash(url) {
+  return url.replace(/\/$/, "");
+}
+
+const baseUrl = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:1080'
+  : removeTrailingSlash(`${window.location.origin}${window.location.pathname}`);
 
 class App extends Component {
 
