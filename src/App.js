@@ -58,7 +58,7 @@ const Email = ({ email, isOpen, onToggle }) => {
   )
 };
 
-const baseUrl = 'http://localhost:1080';
+const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:1080' : `${window.location.protocol}//${window.location.host}` ;
 
 class App extends Component {
 
