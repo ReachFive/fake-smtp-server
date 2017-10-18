@@ -2,7 +2,18 @@
   "name": "fake-smtp-server",
   "version": "0.5.0",
   "description": "Fake SMTP Server for email testing",
-  "url": "https://github.com/ReachFive/fake-smtp-server",
+  "homepage": "https://github.com/ReachFive/fake-smtp-server",
+  "bugs": {
+    "url": "https://github.com/ReachFive/fake-smtp-server/issues"
+  },
+  "keywords": [
+    "smtp",
+    "testing"
+  ],
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/ReachFive/fake-smtp-server.git"
+  },
   "main": "index.js",
   "author": "ReachFive",
   "license": "MIT",
