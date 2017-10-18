@@ -8,7 +8,15 @@
   },
   "keywords": [
     "smtp",
-    "testing"
+    "development",
+    "test",
+    "fake",
+    "dummy",
+    "mock",
+    "email",
+    "e-mail",
+    "automated",
+    "ci"
   ],
   "repository": {
     "type" : "git",
