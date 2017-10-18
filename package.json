@@ -1,6 +1,6 @@
 {
   "name": "fake-smtp-server",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Fake SMTP Server for email testing",
   "homepage": "https://github.com/ReachFive/fake-smtp-server",
   "bugs": {
