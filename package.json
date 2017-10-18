@@ -44,6 +44,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "prepublish": "yarn run build"
+    "prepublishOnly": "yarn run build"
   }
 }
