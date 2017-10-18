@@ -52,7 +52,7 @@
   ],
   "scripts": {
     "start": "react-scripts start",
-    "build": "PUBLIC_URL=/ react-scripts build",
+    "build": "PUBLIC_URL=./ react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "prepublishOnly": "yarn run build"
