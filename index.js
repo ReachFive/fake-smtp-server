@@ -2,6 +2,7 @@
 const SMTPServer = require('smtp-server').SMTPServer;
 const simpleParser = require('mailparser').simpleParser;
 const express = require("express");
+const path = require("path");
 const _ = require("lodash");
 const moment = require("moment");
 const cli = require('cli').enable('catchall');
@@ -54,6 +55,16 @@ server.listen(config['smtp-port']);
 
 const app = express();
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+const buildDir = path.join(__dirname, 'build');
+
+app.use(express.static(buildDir));
+
 function emailFilter(filter) {
   return email => {
     if (filter.since || filter.until) {
@@ -78,30 +89,8 @@ function emailFilter(filter) {
   }
 }
 
-function getEmails(filter) {
-  return mails.filter(emailFilter(filter))
-}
-
-function getEmailsTo(address, filter) {
-  const fullFilter = _.clone(filter);
-  fullFilter.to = address;
-  return getEmails(fullFilter);
-}
-
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
-app.use(express.static('build'));
-
 app.get('/api/emails', (req, res) => {
-  res.json(getEmails(req.query));
-});
-
-app.get('/api/emails/:address', (req, res) => {
-  res.json(getEmailsTo(req.params.address, req.query));
+  res.json(mails.filter(emailFilter(req.query)));
 });
 
 app.listen(config['http-port'], () => {
