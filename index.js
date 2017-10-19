@@ -94,7 +94,7 @@ app.get('/api/emails', (req, res) => {
 });
 
 app.listen(config['http-port'], () => {
-  cli.info("HTTP server listening on port " + config['http-port'] + ", e-mails are available on /emails.");
+  cli.info("HTTP server listening on port " + config['http-port']);
 });
 
 cli.info("SMTP server listening on port " + config['smtp-port']);
