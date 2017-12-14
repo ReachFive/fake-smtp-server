@@ -93,6 +93,11 @@ app.get('/api/emails', (req, res) => {
   res.json(mails.filter(emailFilter(req.query)));
 });
 
+app.delete('/api/emails', (req, res) => {
+    mails.length = 0;
+    res.send();
+});
+
 app.listen(config['http-port'], () => {
   cli.info("HTTP server listening on port " + config['http-port']);
 });

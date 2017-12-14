@@ -6,7 +6,9 @@ It allows manual testing in a web interface, and automated testing via an API.
 
 ## API
 
-Received mails are listed on `http://localhost:1080/api/emails`, and looks like this:a 
+#### Listing all received emails
+
+Received mails are listed on `http://localhost:1080/api/emails`, and looks like this:
 
 ```json
 [
@@ -55,6 +57,14 @@ Example:
 ```
     GET http://localhost:1080/api/emails?from=joe@example.com&to=bob@example.com&since=2017-09-18T12:00:00Z&until=2017-09-19T00:00:00Z
 ```
+
+#### Removing all received email
+
+To remove all emails without restarting the server:
+```
+    DELETE http://localhost:1080/api/emails
+``` 
+
 
 ## Web interface
 
