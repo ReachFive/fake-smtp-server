@@ -58,14 +58,6 @@ const Email = ({ email, isOpen, onToggle }) => {
   )
 };
 
-function removeTrailingSlash(url) {
-  return url.replace(/\/$/, "");
-}
-
-const baseUrl = process.env.NODE_ENV === 'development'
-  ? 'http://localhost:1080'
-  : removeTrailingSlash(`${window.location.origin}${window.location.pathname}`);
-
 class App extends Component {
 
   state = {
@@ -74,7 +66,7 @@ class App extends Component {
   };
 
   componentDidMount() {
-    fetch(`${baseUrl}/api/emails`).then(resp => resp.json()).then(emails => {
+    fetch(`/api/emails`).then(resp => resp.json()).then(emails => {
       this.setState({ emails: emails });
     });
   }
