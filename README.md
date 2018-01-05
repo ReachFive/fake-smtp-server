@@ -87,3 +87,4 @@ Go to `http://localhost:1080`
       -w, --whitelist STRING Only accept e-mails from these adresses. 
                              Accepts multiple e-mails comma-separated.
       -m, --max [NUMBER]     Max number of e-mails to keep (Default is 10)
+      -a, --auth [String]    Authentication details in USERNAME:PASSWORD format
