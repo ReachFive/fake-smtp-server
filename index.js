@@ -2,6 +2,7 @@
 const SMTPServer = require('smtp-server').SMTPServer;
 const simpleParser = require('mailparser').simpleParser;
 const express = require("express");
+const basicAuth = require('express-basic-auth');
 const path = require("path");
 const _ = require("lodash");
 const moment = require("moment");
@@ -12,10 +13,22 @@ const config = cli.parse({
   'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
   'http-port': ['h', 'HTTP port to listen on', 'number', 1080],
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
-  max: ['m', 'Max number of e-mails to keep', 'number', 100]
+  max: ['m', 'Max number of e-mails to keep', 'number', 100],
+  auth: ['a', 'Enable Authentication', 'string']
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
+
+let users = null;
+if (config.auth && !/.+:.+/.test(config.auth)) {
+    cli.error("Please provide authentication details in USERNAME:PASSWORD format");
+    console.log(process.exit(1))
+}
+if (config.auth) {
+  let authConfig = config.auth.split(":");
+  users = {};
+  users[authConfig[0]] = authConfig[1];
+}
 
 const mails = [];
 
@@ -60,6 +73,13 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+
+if (users) {
+    app.use(basicAuth({
+        users: users,
+        challenge: true
+    }));
+}
 
 const buildDir = path.join(__dirname, 'build');
 
