@@ -74,9 +74,14 @@ class App extends Component {
   };
 
   componentDidMount() {
-    fetch(`${baseUrl}/api/emails`).then(resp => resp.json()).then(emails => {
-      this.setState({ emails: emails });
-    });
+      let request = {
+          credentials: 'same-origin',
+      };
+      fetch(`${baseUrl}/api/emails`, request)
+          .then(resp => resp.json())
+          .then(emails => {
+              this.setState({emails: emails});
+          });
   }
 
   handleToggle = email => () => {
