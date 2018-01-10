@@ -6,7 +6,7 @@ const basicAuth = require('express-basic-auth');
 const path = require("path");
 const _ = require("lodash");
 const moment = require("moment");
-const cli = require('cli').enable('catchall');
+const cli = require('cli').enable('catchall').enable('status');
 
 
 const config = cli.parse({
