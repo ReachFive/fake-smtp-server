@@ -44,7 +44,7 @@ const server = new SMTPServer({
   onData(stream, session, callback) {
     simpleParser(stream).then(
       mail => {
-        cli.debug(JSON.stringify(mail));
+        cli.debug(JSON.stringify(mail, null, 2));
 
         mails.unshift(mail);
 
