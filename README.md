@@ -78,13 +78,19 @@ Go to `http://localhost:1080`
 
 ## Usage
 
-    Usage:
-      fake-smtp-server [OPTIONS] [ARGS]
-    
-    Options: 
-      -s, --smtp-port [NUMBER] SMTP port to listen on (Default is 1025)
-      -h, --http-port [NUMBER] HTTP port to listen on (Default is 1080)
-      -w, --whitelist STRING Only accept e-mails from these adresses. 
-                             Accepts multiple e-mails comma-separated.
-      -m, --max [NUMBER]     Max number of e-mails to keep (Default is 10)
-      -a, --auth [String]    Authentication details in USERNAME:PASSWORD format
+```
+Usage:
+  fake-smtp-server [OPTIONS] [ARGS]
+
+Options:
+  -s, --smtp-port [NUMBER] SMTP port to listen on (Default is 1025)
+      --smtp-ip [IP]       IP Address to bind SMTP service to (Default is 0.0.0.0)
+  -h, --http-port [NUMBER] HTTP port to listen on (Default is 1080)
+      --http-ip [IP]       IP Address to bind HTTP service to (Default is 0.0.0.0)
+  -w, --whitelist STRING   Only accept e-mails from these adresses. Accepts
+                           multiple e-mails comma-separated
+  -m, --max [NUMBER]       Max number of e-mails to keep (Default is 100)
+  -a, --auth STRING        Enable Authentication
+  -k, --no-color           Omit color from output
+      --debug              Show debug information
+```
