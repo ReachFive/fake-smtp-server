@@ -44,7 +44,7 @@ const server = new SMTPServer({
     }
   },
   onData(stream, session, callback) {
-    simpleParser(stream).then(
+    parseEmail(stream).then(
       mail => {
         cli.debug(JSON.stringify(mail, null, 2));
 
@@ -61,6 +61,13 @@ const server = new SMTPServer({
     );
   }
 });
+
+function parseEmail(stream) {
+  return simpleParser(stream).then(email => {
+    delete email.headers;
+    return email;
+  });
+}
 
 server.on('error', err => {
   cli.error(err);
