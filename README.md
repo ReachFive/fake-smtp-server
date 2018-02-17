@@ -14,7 +14,6 @@ Received mails are listed on `http://localhost:1080/api/emails`, and looks like 
 [
   {
     "attachments": [],
-    "headers": {},
     "text": "Hi Bob!",
     "textAsHtml": "<p>Hi Bob!</p>",
     "subject": "Hi",
