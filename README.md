@@ -57,6 +57,12 @@ Example:
     GET http://localhost:1080/api/emails?from=joe@example.com&to=bob@example.com&since=2017-09-18T12:00:00Z&until=2017-09-19T00:00:00Z
 ```
 
+##### Viewing headers in responses
+
+By default, fake-smtp-server will not capture custom headers in emails. To enable headers, start the server with the `--headers` flag. If enabled, headers will be serialized as an object type. 
+
+For reference for what headers look like, consult [Nodemailer's documentation](https://nodemailer.com/extras/mailparser/#headers-map), but keep in mind that the HTTP endpoint returns plain JSON objects rather than `Map`s.
+
 #### Removing all received email
 
 To remove all emails without restarting the server:
@@ -82,14 +88,15 @@ Usage:
   fake-smtp-server [OPTIONS] [ARGS]
 
 Options:
-  -s, --smtp-port [NUMBER] SMTP port to listen on (Default is 1025)
-      --smtp-ip [IP]       IP Address to bind SMTP service to (Default is 0.0.0.0)
-  -h, --http-port [NUMBER] HTTP port to listen on (Default is 1080)
-      --http-ip [IP]       IP Address to bind HTTP service to (Default is 0.0.0.0)
-  -w, --whitelist STRING   Only accept e-mails from these adresses. Accepts
-                           multiple e-mails comma-separated
-  -m, --max [NUMBER]       Max number of e-mails to keep (Default is 100)
-  -a, --auth STRING        Enable Authentication
-  -k, --no-color           Omit color from output
-      --debug              Show debug information
+  -s, --smtp-port [NUMBER]SMTP port to listen on (Default is 1025)
+      --smtp-ip [IP]     IP Address to bind SMTP service to (Default is 0.0.0.0)
+  -h, --http-port [NUMBER]HTTP port to listen on (Default is 1080)
+      --http-ip [IP]     IP Address to bind HTTP service to (Default is 0.0.0.0)
+  -w, --whitelist STRING Only accept e-mails from these adresses. Accepts
+                         multiple e-mails comma-separated
+  -m, --max [NUMBER]     Max number of e-mails to keep (Default is 100)
+  -a, --auth STRING      Enable Authentication
+      --headers          Enable headers in responses
+  -k, --no-color         Omit color from output
+      --debug            Show debug information
 ```
