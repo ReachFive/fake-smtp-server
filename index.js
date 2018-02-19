@@ -7,7 +7,6 @@ const path = require("path");
 const _ = require("lodash");
 const moment = require("moment");
 const cli = require('cli').enable('catchall').enable('status');
-const MailParser = require('mailparser').MailParser;
 
 const config = cli.parse({
   'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
