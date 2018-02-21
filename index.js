@@ -8,7 +8,6 @@ const _ = require("lodash");
 const moment = require("moment");
 const cli = require('cli').enable('catchall').enable('status');
 
-
 const config = cli.parse({
   'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
   'smtp-ip': [false, 'IP Address to bind SMTP service to', 'ip', '0.0.0.0'],
@@ -16,7 +15,8 @@ const config = cli.parse({
   'http-ip': [false, 'IP Address to bind HTTP service to', 'ip', '0.0.0.0'],
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
-  auth: ['a', 'Enable Authentication', 'string']
+  auth: ['a', 'Enable Authentication', 'string'],
+  headers: [false, 'Enable headers in responses']
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
@@ -62,9 +62,21 @@ const server = new SMTPServer({
   }
 });
 
+function formatHeaders(headers) {
+  const result = {};
+  for (const [key, value] of headers) {
+    result[key] = value;
+  }
+  return result;
+}
+
 function parseEmail(stream) {
   return simpleParser(stream).then(email => {
-    delete email.headers;
+    if (config.headers) {
+      email.headers = formatHeaders(email.headers);
+    } else {
+      delete email.headers;
+    }
     return email;
   });
 }
