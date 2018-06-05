@@ -46,7 +46,7 @@
     "reactstrap": "^4.8.0"
   },
   "engines": {
-    "node": "^8.5.0"
+    "node": ">=8.5.0"
   },
   "files": [
     "build"
