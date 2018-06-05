@@ -36,6 +36,7 @@ const mails = [];
 
 const server = new SMTPServer({
   authOptional: true,
+  maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
       cb();
