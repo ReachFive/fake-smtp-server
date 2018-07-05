@@ -119,11 +119,11 @@ function emailFilter(filter) {
       }
     }
 
-    if (filter.to && _.every(email.to.value, to => to.address !== filter.to)) {
+    if (!filter.to || _.every(email.to.value, to => to.address !== filter.to)) {
       return false;
     }
 
-    if (filter.from && _.every(email.from.value, from => from.address !== filter.from)) {
+    if (!filter.from || _.every(email.from.value, from => from.address !== filter.from)) {
       return false;
     }
 
