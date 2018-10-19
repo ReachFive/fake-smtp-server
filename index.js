@@ -32,11 +32,16 @@ if (config.auth) {
   users[authConfig[0]] = authConfig[1];
 }
 
+cli.info("Configuration: \n" + JSON.stringify(config, null, 2));
+
 const mails = [];
 
 const server = new SMTPServer({
   authOptional: true,
+  allowInsecureAuth: true,
   maxAllowedUnauthenticatedCommands: 1000,
+  hideSTARTTLS: true,
+
   onMailFrom(address, session, cb) {
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
       cb();
@@ -60,7 +65,11 @@ const server = new SMTPServer({
       },
       callback
     );
-  }
+  },
+	onAuth(auth, session, callback){
+    cli.info("SMTP login for user: " + auth.username);
+    callback(null, {user: auth.username});
+	}
 });
 
 function formatHeaders(headers) {
