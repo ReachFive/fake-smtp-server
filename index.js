@@ -66,10 +66,10 @@ const server = new SMTPServer({
       callback
     );
   },
-	onAuth(auth, session, callback){
+  onAuth(auth, session, callback){
     cli.info("SMTP login for user: " + auth.username);
     callback(null, {user: auth.username});
-	}
+  }
 });
 
 function formatHeaders(headers) {

@@ -30,3 +30,4 @@ EXPOSE 1025
 EXPOSE 1080
 
 CMD node index.js -s ${SMTP_PORT:-1025} --smtp-ip ${SMTP_IP:-0.0.0.0} --http-port ${HTTP_PORT:-1080} --http-ip ${HTTP_IP:-0.0.0.0} --whitelist ${WHITELIST:-''} --max ${MAX:-100} --auth ${AUTH:-''} --headers
+
