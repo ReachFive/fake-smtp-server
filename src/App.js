@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Button,
   Container,
   Card,
   CardHeader,
@@ -10,6 +11,13 @@ import {
   ListGroupItem
 } from 'reactstrap';
 import moment from 'moment';
+
+function openAttachment (attachment) {
+  var byteArray = new Uint8Array(attachment.content.data);
+  var file = new Blob([byteArray], { type: attachment.contentType });
+  var fileURL = URL.createObjectURL(file);
+  window.open(fileURL);
+}
 
 const Email = ({ email, isOpen, onToggle }) => {
   let from = email.from.value[0];
@@ -48,6 +56,16 @@ const Email = ({ email, isOpen, onToggle }) => {
           <ListGroupItem>
             <strong>Subject:&nbsp;</strong>
             {email.subject}
+          </ListGroupItem>
+          <ListGroupItem hidden={email.attachments.length === 0}>
+            <b>Attachments: </b>
+            <div>
+              {email.attachments.map(attachment => (
+                <Button size="sm" className="mr-1" onClick={() => openAttachment(attachment)}>
+                  {attachment.filename}
+                </Button>
+              ))}
+            </div>
           </ListGroupItem>
         </ListGroup>
         <div className="card-body">
