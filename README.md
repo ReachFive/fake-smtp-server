@@ -1,5 +1,5 @@
 
-# Fake STMP Server
+# Fake SMTP Server
 
 Fake SMTP Server is an email testing tool for QA & development teams. 
 It allows manual testing in a web interface, and automated testing via an API.
