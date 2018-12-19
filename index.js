@@ -44,6 +44,12 @@ const server = new SMTPServer({
       cb(new Error('Invalid email from: ' + address.address));
     }
   },
+  onAuth(auth, session, callback) {
+    cli.info('SMTP login for user: ' + auth.username);
+    callback(null, {
+      user: auth.username
+    });
+  },
   onData(stream, session, callback) {
     parseEmail(stream).then(
       mail => {
