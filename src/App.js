@@ -61,7 +61,7 @@ const Email = ({ email, isOpen, onToggle }) => {
             <b>Attachments: </b>
             <div>
               {email.attachments.map(attachment => (
-                <Button size="sm" onClick={() => openAttachment(attachment)}>
+                <Button size="sm" className="mr-1" onClick={() => openAttachment(attachment)}>
                   {attachment.filename}
                 </Button>
               ))}
