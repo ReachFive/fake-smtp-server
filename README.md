@@ -100,3 +100,53 @@ Options:
   -k, --no-color           Omit color from output
       --debug              Show debug information
 ```
+
+## Configure fake-smtp-server to run as a service at startup
+
+These instructions below were tested on **Ubuntu 18.04 LTS** but they should work out of the box (or close to it) on any distribution using ***systemd*** and ***rsyslog***.
+
+### Systemd service
+
+#### Create the `fakesmtp.service` service unit
+* `sudo vim /etc/systemd/system/fakesmtp.service` with the following content
+```shell
+[Unit]
+Description=Fake SMTP service
+After=network.target
+StartLimitIntervalSec=0
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=fake-smtp-server
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/bin/fake-smtp-server  # You can add extra options and arguments here
+
+[Install]
+WantedBy=multi-user.target
+```
+
+#### Make the new service launch on startup
+* `sudo systemctl enable fakesmtp.service`
+
+#### Start/Stop/Restart the service
+* `sudo systemctl start fakesmtp.service`
+* `sudo systemctl stop fakesmtp.service`
+* `sudo systemctl restart fakesmtp.service`
+
+### Logging using rsyslog
+
+The output is recorded by default to `/var/log/syslog` but you can create a separate log file for your service (in this example, logs will be saved to `/var/log/fakesmtp.log`).
+
+#### Create a new **rsyslog** config file
+* `sudo vim /etc/rsyslog.d/fakesmtp.conf` with the following content:
+```shell
+if $programname == 'fake-smtp-server' then /var/log/fakesmtp.log
+& stop
+```
+
+#### Restart **rsyslog** and then restart your shiny new fakesmtp service
+* `systemctl restart rsyslog.service`
+* `systemctl restart fakesmtp.service`
