@@ -9,4 +9,4 @@ RUN npm i && npm run build
 EXPOSE 1025
 EXPOSE 1080
 
-CMD ["node", "index.js"]
+ENTRYPOINT ["node", "index.js"]
