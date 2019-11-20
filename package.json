@@ -1,68 +1,68 @@
 {
-  "name": "fake-smtp-server",
-  "version": "0.8.1",
-  "description": "Fake SMTP Server for email testing",
-  "author": "ReachFive",
-  "license": "MIT",
-  "homepage": "https://github.com/ReachFive/fake-smtp-server",
-  "bugs": {
-    "url": "https://github.com/ReachFive/fake-smtp-server/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ReachFive/fake-smtp-server.git"
-  },
-  "keywords": [
-    "smtp",
-    "development",
-    "test",
-    "fake",
-    "dummy",
-    "mock",
-    "email",
-    "e-mail",
-    "automated",
-    "integration",
-    "ci"
-  ],
-  "main": "index.js",
-  "bin": {
-    "fake-smtp-server": "./index.js"
-  },
-  "dependencies": {
-    "cli": "1.0.1",
-    "express": "4.16.4",
-    "express-basic-auth": "1.1.6",
-    "lodash": "4.17.11",
-    "mailparser": "2.4.3",
-    "moment": "2.24.0",
-    "smtp-server": "3.5.0"
-  },
-  "devDependencies": {
-    "react": "16.8.3",
-    "react-dom": "16.8.3",
-    "react-scripts": "2.1.5",
-    "react-transition-group": "2.6.0",
-    "reactstrap": "7.1.0"
-  },
-  "engines": {
-    "node": ">=8.5.0"
-  },
-  "files": [
-    "build"
-  ],
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "PUBLIC_URL=./ react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "prepublishOnly": "npm run build",
-    "docker:build": "docker build -t reachfive/fake-smtp-server ."
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+    "name": "fake-smtp-server",
+    "version": "0.8.1",
+    "description": "Fake SMTP Server for email testing",
+    "author": "ReachFive",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ReachFive/fake-smtp-server/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ReachFive/fake-smtp-server.git"
+    },
+    "keywords": [
+        "smtp",
+        "development",
+        "test",
+        "fake",
+        "dummy",
+        "mock",
+        "email",
+        "e-mail",
+        "automated",
+        "integration",
+        "ci"
+    ],
+    "main": "index.js",
+    "bin": {
+        "fake-smtp-server": "./index.js"
+    },
+    "dependencies": {
+        "cli": "1.0.1",
+        "express": "4.16.4",
+        "express-basic-auth": "^1.2.0",
+        "lodash": "^4.17.15",
+        "mailparser": "2.4.3",
+        "moment": "2.24.0",
+        "shortid": "^2.2.15",
+        "smtp-server": "3.5.0"
+    },
+    "devDependencies": {
+        "react": "16.8.3",
+        "react-dom": "16.8.3",
+        "react-scripts": "^3.2.0",
+        "react-transition-group": "2.6.0",
+        "reactstrap": "7.1.0"
+    },
+    "engines": {
+        "node": ">=8.5.0"
+    },
+    "files": [
+        "build"
+    ],
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test --env=jsdom",
+        "eject": "react-scripts eject",
+        "prepublishOnly": "npm run build",
+        "docker:build": "docker build -t reachfive/fake-smtp-server ."
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ]
 }
