@@ -13,10 +13,15 @@ import {
 import moment from 'moment';
 
 function openAttachment (attachment) {
-  var byteArray = new Uint8Array(attachment.content.data);
-  var file = new Blob([byteArray], { type: attachment.contentType });
-  var fileURL = URL.createObjectURL(file);
-  window.open(fileURL);
+  if(attachment.saved) {
+    window.open(`${baseUrl}/api/email/attachment/${attachment.id}`);
+  }
+  else {
+    var byteArray = new Uint8Array(attachment.content.data);
+    var file = new Blob([byteArray], { type: attachment.contentType });
+    var fileURL = URL.createObjectURL(file);
+    window.open(fileURL);
+  }
 }
 
 const Email = ({ email, isOpen, onToggle }) => {
