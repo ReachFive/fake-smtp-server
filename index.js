@@ -92,9 +92,23 @@ server.on('error', err => {
   cli.error(err);
 });
 
-server.listen(config['smtp-port'], config['smtp-ip']);
+let state = '';
+
+function startServer() {
+  state = 'STARTING';
+  server.listen(config['smtp-port'], config['smtp-ip'], () => { state = 'STARTED'; });
+}
+
+function stopServer() {
+  state = 'STOPPING';
+  server.close(() => { state = 'STOPPED'; });
+}
+
+startServer();
 
 const app = express();
+
+app.use(express.json());
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -144,6 +158,27 @@ app.get('/api/emails', (req, res) => {
 app.delete('/api/emails', (req, res) => {
     mails.length = 0;
     res.send();
+});
+
+app.get('/api/state', (req, res) => {
+  res.json({'state': state});
+});
+
+app.put('/api/state', (req, res) => {
+  json = req.body;
+  if (json['state'] === 'START') {
+    if (state === 'STOPPED') {
+      startServer();
+    }
+    res.json({'state': state});
+  } else if (json['state'] === 'STOP') {
+    if (state === 'STARTED') {
+      stopServer();
+    }
+    res.json({'state': state});
+  } else {
+    res.status(400).end();
+  }
 });
 
 app.listen(config['http-port'], config['http-ip'], () => {
