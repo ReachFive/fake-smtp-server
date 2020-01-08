@@ -142,8 +142,12 @@ app.get('/api/emails', (req, res) => {
 });
 
 app.delete('/api/emails', (req, res) => {
-    mails.length = 0;
-    res.send();
+  if(Object.keys(req.query).length === 0) {
+      mails.length = 0;
+  } else {
+      mails = mails.filter(emailFilter(req.query));
+  }
+  res.send();
 });
 
 app.listen(config['http-port'], config['http-ip'], () => {
