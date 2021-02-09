@@ -7,6 +7,7 @@ const path = require("path");
 const _ = require("lodash");
 const moment = require("moment");
 const cli = require('cli').enable('catchall').enable('status');
+const fs = require('fs');
 
 const config = cli.parse({
   'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
@@ -16,7 +17,12 @@ const config = cli.parse({
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
-  headers: [false, 'Enable headers in responses']
+  secure: [false, 'Enable Secure option (require SSL connection)'],
+  keystore: [false, 'Path to PKCS12 keystore used for Secure option or when using STARTTLS', 'string'],
+  passphrase: ['p', 'Passphrase for PKCS12 private key', 'string'],
+  smtpAuth: [false, 'Enable SMTP authentication. Accepts a comma-separated list of username:password pairs that are permitted. Setting this makes authentication required', 'string'],
+  headers: [false, 'Enable headers in responses'],
+  hideTLS: [false, 'Hide TLS in feature list']
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
@@ -32,10 +38,14 @@ if (config.auth) {
   users[authConfig[0]] = authConfig[1];
 }
 
+const smtpUsers = config.smtpAuth ? config.smtpAuth.split(',').map(up => up.split(":")) : null;
+
 const mails = [];
 
-const server = new SMTPServer({
+
+const serverOptions = {
   authOptional: true,
+  hideSTARTTLS: config.hideTLS,
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
@@ -67,7 +77,48 @@ const server = new SMTPServer({
       callback
     );
   }
-});
+};
+
+if (smtpUsers) {
+  cli.info("Accepted SMTP users are " + smtpUsers);
+  serverOptions.onAuth = smtpAuthCallback;
+  serverOptions.authOptional = false;
+}
+
+if (config.secure) {
+  serverOptions.secure = true;
+}
+
+if (config.keystore) {
+  if (!fs.existsSync(config.keystore)) {
+    cli.error(`Keystore ${config.keystore} did not exists`);
+    console.log(process.exit(1));
+  }
+
+  serverOptions.pfx = fs.readFileSync(config.keystore);
+  if (config.passphrase)
+    serverOptions.passphrase = config.passphrase;
+  else
+    cli.warn('PFX option set without passphrase');
+}
+
+cli.info(`Options = ${JSON.stringify(serverOptions)}`);
+
+const server = new SMTPServer(serverOptions);
+
+
+function smtpAuthCallback(auth, session, callback) {
+  const username = auth.username;
+  const password = auth.password;
+
+  cli.info(`${username} is trying to login with password ${password}`);
+
+  if (smtpUsers.find(e => (e[0] === username && e[1] === password)))
+    callback(null, {user: username});
+  else
+    callback(new Error('Invalid username or password'));
+}
+
 
 function formatHeaders(headers) {
   const result = {};
@@ -92,9 +143,23 @@ server.on('error', err => {
   cli.error(err);
 });
 
-server.listen(config['smtp-port'], config['smtp-ip']);
+let state = '';
+
+function startServer() {
+  state = 'STARTING';
+  server.listen(config['smtp-port'], config['smtp-ip'], () => { state = 'STARTED'; });
+}
+
+function stopServer() {
+  state = 'STOPPING';
+  server.close(() => { state = 'STOPPED'; });
+}
+
+startServer();
 
 const app = express();
+
+app.use(express.json());
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -120,6 +185,7 @@ function emailFilter(filter) {
       if (filter.since && date.isBefore(filter.since)) {
         return false;
       }
+
       if (filter.until && date.isAfter(filter.until)) {
         return false;
       }
@@ -142,8 +208,33 @@ app.get('/api/emails', (req, res) => {
 });
 
 app.delete('/api/emails', (req, res) => {
-    mails.length = 0;
+    if(Object.keys(req.query).length === 0) {
+      mails.length = 0;
+  } else {
+      mails = mails.filter(emailFilter(req.query));
+  }
     res.send();
+});
+
+app.get('/api/state', (req, res) => {
+  res.json({'state': state});
+});
+
+app.put('/api/state', (req, res) => {
+  json = req.body;
+  if (json['state'] === 'START') {
+    if (state === 'STOPPED') {
+      startServer();
+    }
+    res.json({'state': state});
+  } else if (json['state'] === 'STOP') {
+    if (state === 'STARTED') {
+      stopServer();
+    }
+    res.json({'state': state});
+  } else {
+    res.status(400).end();
+  }
 });
 
 app.listen(config['http-port'], config['http-ip'], () => {
