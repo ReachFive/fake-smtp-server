@@ -36,6 +36,7 @@
     "lodash": "^4.17.20",
     "mailparser": "2.7.1",
     "moment": "2.24.0",
+    "shortid": "^2.2.15",
     "smtp-server": "3.5.0"
   },
   "devDependencies": {
@@ -57,7 +58,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "prepublishOnly": "npm run build",
-    "docker:build": "docker build -t versus/fake-smtp-server ."
+    "docker:build": "docker build -t reachfive/fake-smtp-server ."
   },
   "browserslist": [
     ">0.2%",

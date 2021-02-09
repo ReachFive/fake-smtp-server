@@ -8,6 +8,9 @@ const _ = require("lodash");
 const moment = require("moment");
 const cli = require('cli').enable('catchall').enable('status');
 const fs = require('fs');
+const shortid = require('shortid');
+
+const getRootDir = () => path.parse(process.cwd()).root
 
 const config = cli.parse({
   'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
@@ -17,6 +20,8 @@ const config = cli.parse({
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
+  save: [false, 'Save attachements to disk when email is recieved'],
+  savepath: [false, 'location to save attachments', 'string', './downloads/'],
   secure: [false, 'Enable Secure option (require SSL connection)'],
   keystore: [false, 'Path to PKCS12 keystore used for Secure option or when using STARTTLS', 'string'],
   passphrase: ['p', 'Passphrase for PKCS12 private key', 'string'],
@@ -38,10 +43,15 @@ if (config.auth) {
   users[authConfig[0]] = authConfig[1];
 }
 
+const savedAttachmentsDir = path.join(__dirname, config.savepath);
+if(config.save) {
+    !fs.existsSync(savedAttachmentsDir) && fs.mkdirSync(savedAttachmentsDir);
+}	
+
 const smtpUsers = config.smtpAuth ? config.smtpAuth.split(',').map(up => up.split(":")) : null;
 
 const mails = [];
-
+const savedAttachments = new Map();
 
 const serverOptions = {
   authOptional: true,
@@ -135,9 +145,33 @@ function parseEmail(stream) {
     } else {
       delete email.headers;
     }
+    if(config.save) {
+      saveAttachmentsToDisk(email.attachments)
+    }
     return email;
   });
 }
+
+function saveAttachmentsToDisk(attachements)
+{
+    for (let index = 0; index < attachements.length; index++) {
+        const attachment = attachements[index];
+        attachment.id = shortid.generate();            
+        let filePath = attachmentSaveLocation(attachment);
+        
+        fs.writeFile(filePath, attachment.content, function() {
+            delete attachment.content;
+            savedAttachments.set(attachment.id, filePath);
+            attachment.saved = true;
+        });
+    }
+}
+
+function attachmentSaveLocation(attachment) {
+    let filename = attachment.id + '_' + attachment.filename;
+    return path.join(savedAttachmentsDir, filename);
+}
+
 
 server.on('error', err => {
   cli.error(err);
@@ -207,14 +241,26 @@ app.get('/api/emails', (req, res) => {
   res.json(mails.filter(emailFilter(req.query)));
 });
 
+app.get('/api/email/attachment/:id', (req, res) => {
+  res.sendFile(savedAttachments.get(req.params.id));
+});
+
+
 app.delete('/api/emails', (req, res) => {
-    if(Object.keys(req.query).length === 0) {
+  if(Object.keys(req.query).length === 0) {
       mails.length = 0;
   } else {
       mails = mails.filter(emailFilter(req.query));
   }
-    res.send();
+  for(let file of savedAttachments.values()) {
+      fs.unlink(file, err => {
+          if (err) throw err;
+      });
+  }
+  savedAttachments.clear();
+  res.send();
 });
+
 
 app.get('/api/state', (req, res) => {
   res.json({'state': state});
