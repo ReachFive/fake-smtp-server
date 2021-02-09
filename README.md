@@ -111,6 +111,8 @@ Options:
   -k, --no-color            Omit color from output
       --debug               Show debug information
   -c, --catch               Catch unanticipated errors
+      --save                Save attachements to disk when email is recieved
+      --savepath            Location to save attachments
 ```
 
 ## Configure fake-smtp-server to run as a service at startup
