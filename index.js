@@ -17,6 +17,7 @@ const config = cli.parse({
   'smtp-ip': [false, 'IP Address to bind SMTP service to', 'ip', '0.0.0.0'],
   'http-port': ['h', 'HTTP port to listen on', 'number', 1080],
   'http-ip': [false, 'IP Address to bind HTTP service to', 'ip', '0.0.0.0'],
+  'base-path': [false, 'expose api and frontend on a custom path', 'string', ''],
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
@@ -177,7 +178,7 @@ server.on('error', err => {
   cli.error(err);
 });
 
-let state = '';
+let state = 'UNKNOWN';
 
 function startServer() {
   state = 'STARTING';
@@ -209,8 +210,10 @@ if (users) {
 }
 
 const buildDir = path.join(__dirname, 'build');
+const baseUrl = config['base-path'];
+const frontBaseUrl = baseUrl === '' ? '/' : baseUrl;
 
-app.use(express.static(buildDir));
+app.use(`${frontBaseUrl}`,express.static(buildDir));
 
 function emailFilter(filter) {
   return email => {
@@ -237,16 +240,19 @@ function emailFilter(filter) {
   }
 }
 
-app.get('/api/emails', (req, res) => {
+
+
+
+app.get(`${baseUrl}/api/emails`, (req, res) => {
   res.json(mails.filter(emailFilter(req.query)));
 });
 
-app.get('/api/email/attachment/:id', (req, res) => {
+app.get(`${baseUrl}/api/email/attachment/:id`, (req, res) => {
   res.sendFile(savedAttachments.get(req.params.id));
 });
 
 
-app.delete('/api/emails', (req, res) => {
+app.delete(`${baseUrl}/api/emails`, (req, res) => {
   if(Object.keys(req.query).length === 0) {
       mails.length = 0;
   } else {
@@ -262,11 +268,11 @@ app.delete('/api/emails', (req, res) => {
 });
 
 
-app.get('/api/state', (req, res) => {
+app.get(`${baseUrl}/api/state`, (req, res) => {
   res.json({'state': state});
 });
 
-app.put('/api/state', (req, res) => {
+app.put(`${baseUrl}/api/state`, (req, res) => {
   json = req.body;
   if (json['state'] === 'START') {
     if (state === 'STOPPED') {
@@ -285,6 +291,12 @@ app.put('/api/state', (req, res) => {
 
 app.listen(config['http-port'], config['http-ip'], () => {
   cli.info("HTTP server listening on http://" + config['http-ip'] +  ":" + config['http-port']);
+});
+
+process.on('SIGINT', function() {
+  console.log("Caught interrupt signal");
+  stopServer();
+  process.exit(0);
 });
 
 cli.info("SMTP server listening on " + config['smtp-ip'] + ":" + config['smtp-port']);

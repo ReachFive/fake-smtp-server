@@ -95,6 +95,7 @@ Options:
       --smtp-ip [IP]        IP Address to bind SMTP service to (Default is 0.0.0.0)
   -h, --http-port [NUMBER]  HTTP port to listen on (Default is 1080)
       --http-ip [IP]        IP Address to bind HTTP service to (Default is 0.0.0.0)
+      --base-path [PATH]    Option to expose api and web frontend on a custom path
   -w, --whitelist STRING    Only accept e-mails from these adresses. Accepts
                             multiple e-mails comma-separated
   -m, --max [NUMBER]        Max number of e-mails to keep (Default is 100)
