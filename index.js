@@ -117,7 +117,6 @@ cli.info(`Options = ${JSON.stringify(serverOptions)}`);
 
 const server = new SMTPServer(serverOptions);
 
-
 function smtpAuthCallback(auth, session, callback) {
   const username = auth.username;
   const password = auth.password;
@@ -239,9 +238,6 @@ function emailFilter(filter) {
     return true;
   }
 }
-
-
-
 
 app.get(`${baseUrl}/api/emails`, (req, res) => {
   res.json(mails.filter(emailFilter(req.query)));
