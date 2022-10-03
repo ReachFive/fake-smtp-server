@@ -4,7 +4,7 @@ COPY . /www
 
 WORKDIR /www
 
-RUN npm audit fix --force
+RUN export NODE_OPTIONS=--openssl-legacy-provider && yarn build && yarn install --production --ignore-scripts --prefer-offline
 RUN npm i && npm run build
 
 EXPOSE 1025
