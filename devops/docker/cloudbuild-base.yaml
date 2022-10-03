@@ -1,0 +1,6 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build' ,'-f', '/workspace/devops/docker/dockerfile-fakesmtp' ,'-t', 'gcr.io/$PROJECT_ID/fakesmtp:$COMMIT_SHA', '-t', 'gcr.io/$PROJECT_ID/fakesmtp:latest', '.' ]
+images:
+- 'gcr.io/$PROJECT_ID/fakesmtp:$COMMIT_SHA'
+- 'gcr.io/$PROJECT_ID/fakesmtp:latest'
