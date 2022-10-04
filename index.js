@@ -35,6 +35,7 @@ if (config.auth) {
 const mails = [];
 
 const server = new SMTPServer({
+  disabledCommands: ['STARTTLS'],
   authOptional: true,
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
