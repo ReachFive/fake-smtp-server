@@ -19,7 +19,22 @@ function openAttachment (attachment) {
   window.open(fileURL);
 }
 
+function setupEmailWithDefaults(email) {
+  if(!email.attachments) email.attachments = [];
+  if(!email.date) email.date = new Date();
+  if(!email.from) {
+    email.from = { value: []}
+    email.from.value[0] = {"name": "", "address" : "", "html": ""};
+  }
+  if(!email.to) {
+    email.to = { value: []}
+    email.to.value[0] = {"name": "", "address" : "", "html": ""};
+  }
+}
+
+
 const Email = ({ email, isOpen, onToggle }) => {
+  setupEmailWithDefaults(email);
   let from = email.from.value[0];
   let to = email.to.value[0];
   return (
