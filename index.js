@@ -10,9 +10,9 @@ const cli = require('cli').enable('catchall').enable('status');
 
 const config = cli.parse({
   'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
-  'smtp-ip': [false, 'IP Address to bind SMTP service to', 'ip', '0.0.0.0'],
+  'smtp-ip': ['i', 'IP Address to bind SMTP service to', 'ip', '0.0.0.0'],
   'http-port': ['h', 'HTTP port to listen on', 'number', 1080],
-  'http-ip': [false, 'IP Address to bind HTTP service to', 'ip', '0.0.0.0'],
+  'http-ip': ['p', 'IP Address to bind HTTP service to', 'ip', '0.0.0.0'],
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
