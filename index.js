@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const SMTPServer = require('smtp-server').SMTPServer;
 const simpleParser = require('mailparser').simpleParser;
+const fs = require("fs");
 const express = require("express");
 const basicAuth = require('express-basic-auth');
 const path = require("path");
@@ -9,10 +10,14 @@ const moment = require("moment");
 const cli = require('cli').enable('catchall').enable('status');
 
 const config = cli.parse({
-  'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
   'smtp-ip': [false, 'IP Address to bind SMTP service to', 'ip', '0.0.0.0'],
-  'http-port': ['h', 'HTTP port to listen on', 'number', 1080],
+  'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
+  'smtp-port-file': [false, 'File to write SMTP port to (useful if you pass --smtp-port 0)', 'string'],
+
   'http-ip': [false, 'IP Address to bind HTTP service to', 'ip', '0.0.0.0'],
+  'http-port': ['h', 'HTTP port to listen on', 'number', 1080],
+  'http-port-file': [false, 'File to write HTTP port to (useful if you pass --http-port 0)', 'string'],
+
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
@@ -92,7 +97,15 @@ server.on('error', err => {
   cli.error(err);
 });
 
-server.listen(config['smtp-port'], config['smtp-ip']);
+const serverServer = server.listen(config['smtp-port'], config['smtp-ip'], () => {
+  const addr = serverServer.address();
+
+  cli.info("SMTP server listening on " + config['smtp-ip'] + ":" + addr.port);
+
+  if (config["smtp-port-file"]) {
+    fs.writeFileSync(config["smtp-port-file"], addr.port.toString());
+  }
+});
 
 const app = express();
 
@@ -146,8 +159,12 @@ app.delete('/api/emails', (req, res) => {
     res.send();
 });
 
-app.listen(config['http-port'], config['http-ip'], () => {
-  cli.info("HTTP server listening on http://" + config['http-ip'] +  ":" + config['http-port']);
-});
+const appServer = app.listen(config['http-port'], config['http-ip'], () => {
+  const addr = appServer.address();
 
-cli.info("SMTP server listening on " + config['smtp-ip'] + ":" + config['smtp-port']);
+  cli.info("HTTP server listening on http://" + config['http-ip'] +  ":" + addr.port);
+
+  if (config["http-port-file"]) {
+    fs.writeFileSync(config["http-port-file"], addr.port.toString());
+  }
+});
