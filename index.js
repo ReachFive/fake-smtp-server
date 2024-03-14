@@ -20,7 +20,7 @@ const config = cli.parse({
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
-let emailErrors = []
+const emailErrors = []
 
 let users = null;
 if (config.auth && !/.+:.+/.test(config.auth)) {
@@ -40,13 +40,7 @@ const server = new SMTPServer({
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
     if (emailErrors.length > 0) {
-      const emailError = emailErrors.pop()
-
-      if (!emailErrors.find(error => error.id === emailError.id)) {
-        mails.pop()
-      }
-
-      cb(emailError.error)
+      cb(emailErrors.pop())
     }
 
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
@@ -151,7 +145,13 @@ function emailFilter(filter) {
 }
 
 app.post('/api/emails/errors', (req, res) => {
-  emailErrors = req.body.errorData
+  let numberOfErrors = req.body.numberOfErrors
+
+  do {
+    emailErrors.push(new Error('Failed to send email'))
+    numberOfErrors--
+  } while (numberOfErrors > 0)
+
   res.send()
 })
 
