@@ -20,6 +20,7 @@ const config = cli.parse({
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
+let emailErrors = []
 
 let users = null;
 if (config.auth && !/.+:.+/.test(config.auth)) {
@@ -38,6 +39,16 @@ const server = new SMTPServer({
   authOptional: true,
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
+    if (emailErrors.length > 0) {
+      const emailError = emailErrors.pop()
+
+      if (!emailErrors.find(error => error.id === emailError.id)) {
+        mails.pop()
+      }
+
+      cb(emailError.error)
+    }
+
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
       cb();
     } else {
@@ -96,6 +107,8 @@ server.listen(config['smtp-port'], config['smtp-ip']);
 
 const app = express();
 
+app.use(express.json())
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -136,6 +149,11 @@ function emailFilter(filter) {
     return true;
   }
 }
+
+app.post('/api/emails/errors', (req, res) => {
+  emailErrors = req.body.errorData
+  res.send()
+})
 
 app.get('/api/emails', (req, res) => {
   res.json(mails.filter(emailFilter(req.query)));
