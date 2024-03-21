@@ -40,7 +40,10 @@ const server = new SMTPServer({
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
     if (emailErrors.length > 0) {
-      cb(emailErrors.pop())
+      const isError = emailErrors.pop()
+
+      if (isError)
+        cb(new Error('Failed to send mail'))
     }
 
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
@@ -145,13 +148,8 @@ function emailFilter(filter) {
 }
 
 app.post('/api/emails/errors', (req, res) => {
-  let numberOfErrors = req.body.numberOfErrors
-
-  do {
-    emailErrors.push(new Error('Failed to send email'))
-    numberOfErrors--
-  } while (numberOfErrors > 0)
-
+  emailErrors.push(...req.body.errors)
+  emailErrors.reverse()
   res.send()
 })
 
