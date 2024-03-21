@@ -40,7 +40,7 @@ const server = new SMTPServer({
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
     if (emailErrors.length > 0) {
-      const isError = emailErrors.pop()
+      const isError = emailErrors.shift()
 
       if (isError)
         cb(new Error('Failed to send mail'))
@@ -149,7 +149,6 @@ function emailFilter(filter) {
 
 app.post('/api/emails/errors', (req, res) => {
   emailErrors.push(...req.body.errors)
-  emailErrors.reverse()
   res.send()
 })
 
