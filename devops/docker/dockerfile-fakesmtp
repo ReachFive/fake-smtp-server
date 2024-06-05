@@ -6,6 +6,8 @@ WORKDIR /www
 
 RUN npm i && npm run build
 
+echo "test" 
+
 EXPOSE 1025
 EXPOSE 1080
 
