@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build' ,'-f', '/workspace/devops/docker/dockerfile-fakesmtp' ,'-t', 'gcr.io/$PROJECT_ID/fakesmtp:$COMMIT_SHA', '-t', 'gcr.io/$PROJECT_ID/fakesmtp:latest', '.' ]
+  args: [ 'build' ,'-f', '/workspace/devops/docker/dockerfile-fakesmtp' ,'-t', 'europe-docker.pkg.dev/$PROJECT_ID/reachfive/fakesmtp:$COMMIT_SHA', '-t', 'europe-docker.pkg.dev/$PROJECT_ID/reachfive/fakesmtp:latest', '.' ]
 images:
-- 'gcr.io/$PROJECT_ID/fakesmtp:$COMMIT_SHA'
-- 'gcr.io/$PROJECT_ID/fakesmtp:latest'
+- 'europe-docker.pkg.dev/$PROJECT_ID/reachfive/fakesmtp:$COMMIT_SHA'
+- 'europe-docker.pkg.dev/$PROJECT_ID/reachfive/fakesmtp:latest'

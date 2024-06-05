@@ -6,7 +6,7 @@ WORKDIR /www
 
 RUN npm i && npm run build
 
-RUN echo "test" 
+RUN echo "test2" 
 
 EXPOSE 1025
 EXPOSE 1080
