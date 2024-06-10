@@ -7,16 +7,28 @@ const path = require("path");
 const _ = require("lodash");
 const moment = require("moment");
 const cli = require('cli').enable('catchall').enable('status');
+const fs = require('fs');
+const shortid = require('shortid');
+
+const getRootDir = () => path.parse(process.cwd()).root
 
 const config = cli.parse({
   'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
   'smtp-ip': [false, 'IP Address to bind SMTP service to', 'ip', '0.0.0.0'],
   'http-port': ['h', 'HTTP port to listen on', 'number', 1080],
   'http-ip': [false, 'IP Address to bind HTTP service to', 'ip', '0.0.0.0'],
+  'base-path': [false, 'expose api and frontend on a custom path', 'string', ''],
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
-  headers: [false, 'Enable headers in responses']
+  save: [false, 'Save attachements to disk when email is recieved'],
+  savepath: [false, 'location to save attachments', 'string', './downloads/'],
+  secure: [false, 'Enable Secure option (require SSL connection)'],
+  keystore: [false, 'Path to PKCS12 keystore used for Secure option or when using STARTTLS', 'string'],
+  passphrase: ['p', 'Passphrase for PKCS12 private key', 'string'],
+  smtpAuth: [false, 'Enable SMTP authentication. Accepts a comma-separated list of username:password pairs that are permitted. Setting this makes authentication required', 'string'],
+  headers: [false, 'Enable headers in responses'],
+  hideTLS: [false, 'Hide TLS in feature list']
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
@@ -32,10 +44,19 @@ if (config.auth) {
   users[authConfig[0]] = authConfig[1];
 }
 
-const mails = [];
+const savedAttachmentsDir = path.join(__dirname, config.savepath);
+if(config.save) {
+    !fs.existsSync(savedAttachmentsDir) && fs.mkdirSync(savedAttachmentsDir);
+}	
 
-const server = new SMTPServer({
+const smtpUsers = config.smtpAuth ? config.smtpAuth.split(',').map(up => up.split(":")) : null;
+
+const mails = [];
+const savedAttachments = new Map();
+
+const serverOptions = {
   authOptional: true,
+  hideSTARTTLS: config.hideTLS,
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
@@ -67,7 +88,47 @@ const server = new SMTPServer({
       callback
     );
   }
-});
+};
+
+if (smtpUsers) {
+  cli.info("Accepted SMTP users are " + smtpUsers);
+  serverOptions.onAuth = smtpAuthCallback;
+  serverOptions.authOptional = false;
+}
+
+if (config.secure) {
+  serverOptions.secure = true;
+}
+
+if (config.keystore) {
+  if (!fs.existsSync(config.keystore)) {
+    cli.error(`Keystore ${config.keystore} did not exists`);
+    console.log(process.exit(1));
+  }
+
+  serverOptions.pfx = fs.readFileSync(config.keystore);
+  if (config.passphrase)
+    serverOptions.passphrase = config.passphrase;
+  else
+    cli.warn('PFX option set without passphrase');
+}
+
+cli.info(`Options = ${JSON.stringify(serverOptions)}`);
+
+const server = new SMTPServer(serverOptions);
+
+function smtpAuthCallback(auth, session, callback) {
+  const username = auth.username;
+  const password = auth.password;
+
+  cli.info(`${username} is trying to login with password ${password}`);
+
+  if (smtpUsers.find(e => (e[0] === username && e[1] === password)))
+    callback(null, {user: username});
+  else
+    callback(new Error('Invalid username or password'));
+}
+
 
 function formatHeaders(headers) {
   const result = {};
@@ -84,17 +145,55 @@ function parseEmail(stream) {
     } else {
       delete email.headers;
     }
+    if(config.save) {
+      saveAttachmentsToDisk(email.attachments)
+    }
     return email;
   });
 }
+
+function saveAttachmentsToDisk(attachements)
+{
+    for (let index = 0; index < attachements.length; index++) {
+        const attachment = attachements[index];
+        attachment.id = shortid.generate();            
+        let filePath = attachmentSaveLocation(attachment);
+        
+        fs.writeFile(filePath, attachment.content, function() {
+            delete attachment.content;
+            savedAttachments.set(attachment.id, filePath);
+            attachment.saved = true;
+        });
+    }
+}
+
+function attachmentSaveLocation(attachment) {
+    let filename = attachment.id + '_' + attachment.filename;
+    return path.join(savedAttachmentsDir, filename);
+}
+
 
 server.on('error', err => {
   cli.error(err);
 });
 
-server.listen(config['smtp-port'], config['smtp-ip']);
+let state = 'UNKNOWN';
+
+function startServer() {
+  state = 'STARTING';
+  server.listen(config['smtp-port'], config['smtp-ip'], () => { state = 'STARTED'; });
+}
+
+function stopServer() {
+  state = 'STOPPING';
+  server.close(() => { state = 'STOPPED'; });
+}
+
+startServer();
 
 const app = express();
+
+app.use(express.json());
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -110,8 +209,10 @@ if (users) {
 }
 
 const buildDir = path.join(__dirname, 'build');
+const baseUrl = config['base-path'];
+const frontBaseUrl = baseUrl === '' ? '/' : baseUrl;
 
-app.use(express.static(buildDir));
+app.use(`${frontBaseUrl}`,express.static(buildDir));
 
 function emailFilter(filter) {
   return email => {
@@ -120,6 +221,7 @@ function emailFilter(filter) {
       if (filter.since && date.isBefore(filter.since)) {
         return false;
       }
+
       if (filter.until && date.isAfter(filter.until)) {
         return false;
       }
@@ -137,17 +239,60 @@ function emailFilter(filter) {
   }
 }
 
-app.get('/api/emails', (req, res) => {
+app.get(`${baseUrl}/api/emails`, (req, res) => {
   res.json(mails.filter(emailFilter(req.query)));
 });
 
-app.delete('/api/emails', (req, res) => {
-    mails.length = 0;
-    res.send();
+app.get(`${baseUrl}/api/email/attachment/:id`, (req, res) => {
+  res.sendFile(savedAttachments.get(req.params.id));
+});
+
+
+app.delete(`${baseUrl}/api/emails`, (req, res) => {
+  if(Object.keys(req.query).length === 0) {
+      mails.length = 0;
+  } else {
+      mails = mails.filter(emailFilter(req.query));
+  }
+  for(let file of savedAttachments.values()) {
+      fs.unlink(file, err => {
+          if (err) throw err;
+      });
+  }
+  savedAttachments.clear();
+  res.send();
+});
+
+
+app.get(`${baseUrl}/api/state`, (req, res) => {
+  res.json({'state': state});
+});
+
+app.put(`${baseUrl}/api/state`, (req, res) => {
+  json = req.body;
+  if (json['state'] === 'START') {
+    if (state === 'STOPPED') {
+      startServer();
+    }
+    res.json({'state': state});
+  } else if (json['state'] === 'STOP') {
+    if (state === 'STARTED') {
+      stopServer();
+    }
+    res.json({'state': state});
+  } else {
+    res.status(400).end();
+  }
 });
 
 app.listen(config['http-port'], config['http-ip'], () => {
   cli.info("HTTP server listening on http://" + config['http-ip'] +  ":" + config['http-port']);
+});
+
+process.on('SIGINT', function() {
+  console.log("Caught interrupt signal");
+  stopServer();
+  process.exit(0);
 });
 
 cli.info("SMTP server listening on " + config['smtp-ip'] + ":" + config['smtp-port']);
