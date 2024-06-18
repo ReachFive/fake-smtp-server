@@ -10,9 +10,9 @@ const cli = require('cli').enable('catchall').enable('status');
 
 const config = cli.parse({
   'smtp-port': ['s', 'SMTP port to listen on', 'number', 1025],
-  'smtp-ip': [false, 'IP Address to bind SMTP service to', 'ip', '0.0.0.0'],
+  'smtp-ip': ['i', 'IP Address to bind SMTP service to', 'ip', '0.0.0.0'],
   'http-port': ['h', 'HTTP port to listen on', 'number', 1080],
-  'http-ip': [false, 'IP Address to bind HTTP service to', 'ip', '0.0.0.0'],
+  'http-ip': ['p', 'IP Address to bind HTTP service to', 'ip', '0.0.0.0'],
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
@@ -20,6 +20,7 @@ const config = cli.parse({
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
+const emailErrors = []
 
 let users = null;
 if (config.auth && !/.+:.+/.test(config.auth)) {
@@ -38,6 +39,13 @@ const server = new SMTPServer({
   authOptional: true,
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
+    if (emailErrors.length > 0) {
+      const isError = emailErrors.shift()
+
+      if (isError)
+        cb(new Error('Failed to send mail'))
+    }
+
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
       cb();
     } else {
@@ -96,6 +104,8 @@ server.listen(config['smtp-port'], config['smtp-ip']);
 
 const app = express();
 
+app.use(express.json())
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -136,6 +146,11 @@ function emailFilter(filter) {
     return true;
   }
 }
+
+app.post('/api/emails/errors', (req, res) => {
+  emailErrors.push(...req.body.errors)
+  res.send()
+})
 
 app.get('/api/emails', (req, res) => {
   res.json(mails.filter(emailFilter(req.query)));
