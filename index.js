@@ -16,7 +16,8 @@ const config = cli.parse({
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
-  headers: [false, 'Enable headers in responses']
+  headers: [false, 'Enable headers in responses'],
+  hideTLS: [false, 'Hide TLS in feature list']
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
@@ -36,6 +37,7 @@ const mails = [];
 
 const server = new SMTPServer({
   authOptional: true,
+  hideSTARTTLS: config.hideTLS,
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
