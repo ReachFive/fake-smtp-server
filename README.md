@@ -91,17 +91,27 @@ Usage:
   fake-smtp-server [OPTIONS] [ARGS]
 
 Options:
-  -s, --smtp-port [NUMBER] SMTP port to listen on (Default is 1025)
-      --smtp-ip [IP]       IP Address to bind SMTP service to (Default is 0.0.0.0)
-  -h, --http-port [NUMBER] HTTP port to listen on (Default is 1080)
-      --http-ip [IP]       IP Address to bind HTTP service to (Default is 0.0.0.0)
-  -w, --whitelist STRING   Only accept e-mails from these adresses. Accepts
-                           multiple e-mails comma-separated
-  -m, --max [NUMBER]       Max number of e-mails to keep (Default is 100)
-  -a, --auth STRING        Enable Authentication
-      --headers            Enable headers in responses
-  -k, --no-color           Omit color from output
-      --debug              Show debug information
+  -s, --smtp-port [NUMBER]  SMTP port to listen on (Default is 1025)
+      --smtp-ip [IP]        IP Address to bind SMTP service to (Default is 0.0.0.0)
+  -h, --http-port [NUMBER]  HTTP port to listen on (Default is 1080)
+      --http-ip [IP]        IP Address to bind HTTP service to (Default is 0.0.0.0)
+  -w, --whitelist STRING    Only accept e-mails from these adresses. Accepts
+                            multiple e-mails comma-separated
+  -m, --max [NUMBER]        Max number of e-mails to keep (Default is 100)
+  -a, --auth STRING         Enable Authentication
+      --secure              Enable Secure option (require SSL connection)
+      --keystore STRING     Path to PKCS12 keystore used for Secure option or when
+                            using STARTTLS
+  -p, --passphrase STRING   Passphrase for PKCS12 private key
+      --smtpAuth STRING     Enable SMTP authentication. Accepts a
+                            comma-separated list of username:password pairs
+                            that are permitted. Setting this makes
+                            authentication required
+      --headers             Enable headers in responses
+  -k, --no-color            Omit color from output
+      --debug               Show debug information
+  -c, --catch               Catch unanticipated errors
+
 ```
 
 ## Configure fake-smtp-server to run as a service at startup
