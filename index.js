@@ -125,6 +125,10 @@ function emailFilter(filter) {
       }
     }
 
+    if (!email.to || !email.from) {
+      return false;
+    }
+
     if (filter.to && _.every(email.to.value, to => to.address !== filter.to)) {
       return false;
     }
