@@ -1,4 +1,4 @@
-FROM node:10.15.2-alpine
+FROM node:22-alpine3.22
 
 COPY . /www
 
