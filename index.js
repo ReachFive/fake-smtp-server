@@ -24,7 +24,7 @@ const whitelist = config.whitelist ? config.whitelist.split(',') : [];
 let users = null;
 if (config.auth && !/.+:.+/.test(config.auth)) {
     cli.error("Please provide authentication details in USERNAME:PASSWORD format");
-    console.log(process.exit(1))
+    process.exit(1);
 }
 if (config.auth) {
   let authConfig = config.auth.split(":");
@@ -125,11 +125,11 @@ function emailFilter(filter) {
       }
     }
 
-    if (filter.to && _.every(email.to.value, to => to.address !== filter.to)) {
+    if (filter.to && (!email.to || _.every(email.to.value, to => to.address !== filter.to))) {
       return false;
     }
 
-    if (filter.from && _.every(email.from.value, from => from.address !== filter.from)) {
+    if (filter.from && (!email.from || _.every(email.from.value, from => from.address !== filter.from))) {
       return false;
     }
 
