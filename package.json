@@ -31,12 +31,12 @@
   },
   "dependencies": {
     "cli": "1.0.1",
-    "express": "4.16.4",
-    "express-basic-auth": "1.1.6",
-    "lodash": "4.17.11",
-    "mailparser": "2.4.3",
-    "moment": "2.24.0",
-    "smtp-server": "3.5.0"
+    "express": "4.21.2",
+    "express-basic-auth": "1.2.1",
+    "lodash": "4.17.21",
+    "mailparser": "3.7.4",
+    "moment": "2.30.1",
+    "smtp-server": "3.13.6"
   },
   "devDependencies": {
     "react": "16.8.3",
