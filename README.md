@@ -100,6 +100,7 @@ Options:
   -m, --max [NUMBER]       Max number of e-mails to keep (Default is 100)
   -a, --auth STRING        Enable Authentication
       --headers            Enable headers in responses
+      --hide-tls           Do not advertise STARTTLS in the SMTP feature list
   -k, --no-color           Omit color from output
       --debug              Show debug information
 ```
