@@ -16,7 +16,8 @@ const config = cli.parse({
   whitelist: ['w', 'Only accept e-mails from these adresses. Accepts multiple e-mails comma-separated', 'string'],
   max: ['m', 'Max number of e-mails to keep', 'number', 100],
   auth: ['a', 'Enable Authentication', 'string'],
-  headers: [false, 'Enable headers in responses']
+  headers: [false, 'Enable headers in responses'],
+  'hide-tls': [false, 'Do not advertise STARTTLS in the SMTP feature list (for clients that auto-upgrade to broken TLS)']
 });
 
 const whitelist = config.whitelist ? config.whitelist.split(',') : [];
@@ -24,7 +25,7 @@ const whitelist = config.whitelist ? config.whitelist.split(',') : [];
 let users = null;
 if (config.auth && !/.+:.+/.test(config.auth)) {
     cli.error("Please provide authentication details in USERNAME:PASSWORD format");
-    console.log(process.exit(1))
+    process.exit(1);
 }
 if (config.auth) {
   let authConfig = config.auth.split(":");
@@ -36,6 +37,13 @@ const mails = [];
 
 const server = new SMTPServer({
   authOptional: true,
+  // This is a fake server for local testing: it has no real TLS certificate,
+  // so allow AUTH over a plaintext connection instead of returning
+  // "538 Must issue a STARTTLS command first".
+  allowInsecureAuth: true,
+  // Optionally stop advertising STARTTLS so clients don't auto-switch to a
+  // TLS handshake this server can't complete.
+  hideSTARTTLS: config['hide-tls'],
   maxAllowedUnauthenticatedCommands: 1000,
   onMailFrom(address, session, cb) {
     if (whitelist.length == 0 || whitelist.indexOf(address.address) !== -1) {
@@ -125,11 +133,11 @@ function emailFilter(filter) {
       }
     }
 
-    if (filter.to && _.every(email.to.value, to => to.address !== filter.to)) {
+    if (filter.to && (!email.to || _.every(email.to.value, to => to.address !== filter.to))) {
       return false;
     }
 
-    if (filter.from && _.every(email.from.value, from => from.address !== filter.from)) {
+    if (filter.from && (!email.from || _.every(email.from.value, from => from.address !== filter.from))) {
       return false;
     }
 

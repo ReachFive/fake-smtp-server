@@ -17,21 +17,28 @@ function openAttachment (attachment) {
   var file = new Blob([byteArray], { type: attachment.contentType });
   var fileURL = URL.createObjectURL(file);
   window.open(fileURL);
+  // release the blob URL once the new tab has had a chance to load it
+  setTimeout(() => URL.revokeObjectURL(fileURL), 60000);
+}
+
+function displayAddress (mailbox) {
+  if (!mailbox) return '';
+  return mailbox.name && mailbox.name.length ? mailbox.name : mailbox.address;
 }
 
 const Email = ({ email, isOpen, onToggle }) => {
-  let from = email.from.value[0];
-  let to = email.to.value[0];
+  let from = email.from && email.from.value[0];
+  let to = email.to && email.to.value[0];
   return (
     <Card>
       <CardHeader onClick={onToggle}>
         <Row>
           <Col className="px-2" md={4}>
             <div className="text-truncate">
-              {from.name && from.name.length ? from.name : from.address}
+              {displayAddress(from)}
             </div>
             <div className="text-truncate">
-              {to.name && to.name.length ? to.name : to.address}
+              {displayAddress(to)}
             </div>
           </Col>
           <Col className="px-2">
@@ -43,11 +50,11 @@ const Email = ({ email, isOpen, onToggle }) => {
         <ListGroup className="list-group-flush">
           <ListGroupItem>
             <strong>From:&nbsp;</strong>
-            <span dangerouslySetInnerHTML={{ __html: email.from.html }} />
+            <span dangerouslySetInnerHTML={{ __html: (email.from && email.from.html) || '' }} />
           </ListGroupItem>
           <ListGroupItem>
             <strong>To:&nbsp;</strong>
-            <span dangerouslySetInnerHTML={{ __html: email.to.html }} />
+            <span dangerouslySetInnerHTML={{ __html: (email.to && email.to.html) || '' }} />
           </ListGroupItem>
           <ListGroupItem>
             <strong>Date:&nbsp;</strong>
@@ -61,7 +68,7 @@ const Email = ({ email, isOpen, onToggle }) => {
             <b>Attachments: </b>
             <div>
               {email.attachments.map(attachment => (
-                <Button size="sm" className="mr-1" onClick={() => openAttachment(attachment)}>
+                <Button size="sm" className="me-1" onClick={() => openAttachment(attachment)}>
                   {attachment.filename}
                 </Button>
               ))}
