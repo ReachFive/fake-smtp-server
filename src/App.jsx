@@ -87,7 +87,7 @@ function removeTrailingSlash(url) {
   return url.replace(/\/$/, "");
 }
 
-const baseUrl = process.env.NODE_ENV === 'development'
+const baseUrl = import.meta.env.DEV
   ? 'http://localhost:1080'
   : removeTrailingSlash(`${window.location.origin}${window.location.pathname}`);
 
