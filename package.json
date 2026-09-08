@@ -39,12 +39,13 @@
     "smtp-server": "3.19.9"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "6.1.1",
     "bootstrap": "5.3.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-scripts": "5.0.1",
     "react-transition-group": "4.4.5",
-    "reactstrap": "9.2.3"
+    "reactstrap": "9.2.3",
+    "vite": "8.2.2"
   },
   "engines": {
     "node": ">=20"
@@ -53,17 +54,10 @@
     "build"
   ],
   "scripts": {
-    "start": "react-scripts start",
-    "build": "PUBLIC_URL=./ react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "prepublishOnly": "npm run build",
     "docker:build": "docker build -t reachfive/fake-smtp-server ."
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  }
 }
