@@ -1,6 +1,6 @@
 {
-  "name": "fake-smtp-server",
-  "version": "0.8.1",
+  "name": "@reachfive/fake-smtp-server",
+  "version": "0.9.0",
   "description": "Fake SMTP Server for email testing",
   "author": "ReachFive",
   "license": "MIT",
@@ -51,8 +51,12 @@
     "node": ">=20"
   },
   "files": [
-    "build"
+    "build",
+    "CHANGELOG.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "vite",
     "build": "vite build",

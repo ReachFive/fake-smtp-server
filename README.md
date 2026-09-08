@@ -81,8 +81,15 @@ Go to `http://localhost:1080`
 ## Install
 
 ```bash
-  npm install -g fake-smtp-server
+  npm install -g @reachfive/fake-smtp-server
 ```
+
+The command is still `fake-smtp-server`; only the package name is scoped.
+
+> **Note.** The unscoped `fake-smtp-server` package on npm is a separate, unmaintained
+> package last published in 2018, and is not released from this repository. It pins a
+> `mailparser` version that stalls the SMTP `DATA` phase on Node >= 16.9. Use the
+> scoped package above.
 
 ## Usage
 
