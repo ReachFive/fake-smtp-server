@@ -34,9 +34,9 @@
     "express": "5.2.1",
     "express-basic-auth": "1.2.1",
     "lodash": "4.18.1",
-    "mailparser": "3.9.23",
+    "mailparser": "3.9.33",
     "moment": "2.30.1",
-    "smtp-server": "3.19.9"
+    "smtp-server": "3.19.16"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.1.1",
