@@ -35,7 +35,7 @@
     "express-basic-auth": "1.2.1",
     "lodash": "4.18.1",
     "mailparser": "3.9.23",
-    "moment": "2.30.1",
+    "moment": "2.31.0",
     "smtp-server": "3.19.9"
   },
   "devDependencies": {
